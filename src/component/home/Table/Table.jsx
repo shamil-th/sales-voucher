@@ -13,6 +13,7 @@ import TableCss from "./Table.module.css";
 const Table = ({ headerVal, clearForm, printTable }) => {
   const items = useSelector((state) => state.vouchers.items);
   const voucherNo = useSelector((state) => state.vouchers.voucherNo);
+  const statusAlert = useSelector((state) => state.vouchers.status);
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([
     {
@@ -95,6 +96,11 @@ const Table = ({ headerVal, clearForm, printTable }) => {
   };
 
   const handleSave = () => {
+
+    if (!validateData()) {
+      return; 
+    }
+
     const detailTableWithoutAmount = tableData.map(
       ({ amount, ...rest }) => rest
     );
@@ -105,6 +111,9 @@ const Table = ({ headerVal, clearForm, printTable }) => {
     };
 
     dispatch(postVoucher(dataToPost));
+    if(statusAlert==="success"){
+      alert('successfully created')
+    }
   };
 
   const handleClear = () => {
@@ -124,6 +133,24 @@ const Table = ({ headerVal, clearForm, printTable }) => {
 
   const handlePrint = () => {
     printTable();
+  };
+
+  const validateData = () => {
+
+    const isEmpty = tableData.some(
+      (row) =>
+        row.item_code.trim() === "" ||
+        row.item_name.trim() === "" ||
+        row.qty === 0 ||
+        row.rate === 0
+    );
+
+    if (isEmpty) {
+      alert("Please fill in all fields.");
+      return false; 
+    }
+
+    return true; 
   };
 
   const totalAmount = tableData.reduce((acc, curr) => acc + curr.amount, 0);
@@ -155,7 +182,7 @@ const Table = ({ headerVal, clearForm, printTable }) => {
         <button onClick={handleSave}>
           <span className="material-symbols-outlined">done</span>Save
         </button>
-        <button onClick={()=>handlePrint()}>
+        <button onClick={handlePrint}>
           <span className="material-symbols-outlined">print</span>Print
         </button>
         <button onClick={handleClear}>

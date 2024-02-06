@@ -56,7 +56,10 @@ export const voucherSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(postVoucher.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.status = "success";
+      })
+      .addCase(postVoucher.rejected, (state) => {
+        state.status = "failed";
       })
       .addCase(getItems.fulfilled, (state, action) => {
         state.status = "succeeded";
